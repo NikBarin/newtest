@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Распознавание замен</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Вариант 1: локальная библиотека -->
+  <script src="js/tesseract.min.js"></script>
+  <!-- Вариант 2: через CDN (удалите строку выше, если используете CDN) -->
+  <!-- <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script> -->
+</head>
+<body>
+  <header>
+    <h1>Распознавание расписания замен</h1>
+    <p>Загрузите фото или используйте предустановленное изображение</p>
+  </header>
+
+  <main>
+    <!-- Блок загрузки фото -->
+    <section class="upload-section">
+      <label for="fileInput" class="upload-btn">Выбрать фото</label>
+      <input type="file" id="fileInput" accept="image/*" hidden>
+      <p id="fileName" class="file-info">Файл не выбран</p>
+    </section>
+
+    <!-- Результат распознавания -->
+    <section class="result-section">
+      <div id="loading" class="loading">Распознаём текст...</div>
+      <div id="recognizedText" class="recognized-text">
+        Загрузите фото или дождитесь обработки предустановленного изображения.
+      </div>
+    </section>
+
+    <!-- Предустановленное фото (из папки images/) -->
+    <section class="preset-section">
+      <button id="usePresetBtn" class="preset-btn">
+        Использовать предустановленное фото
+      </button>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 OCR-Сервис</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
