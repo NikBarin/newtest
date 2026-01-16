@@ -1,0 +1,113 @@
+:root {
+  --bg: #0a1929;
+  --accent: #4CAF50;
+  --text: #e0f7fa;
+  --muted: #80cbc4;
+  --glass: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.2);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--bg), #003366);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+main {
+  flex: 1;
+  max-width: 900px;
+  width: 90%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.upload-section,
+.preset-section,
+.result-section {
+  margin: 1.5rem 0;
+  padding: 1.2rem;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.upload-btn,
+.preset-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.upload-btn:hover,
+.preset-btn:hover {
+  background: #388e3c;
+}
+
+.file-info {
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: var(--accent);
+}
+
+.recognized-text {
+  line-height: 1.6;
+  white-space: pre-line;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  min-height: 100px;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+@media (max-width: 600px) {
+  main {
+    width: 100%;
+    padding: 0.5rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+}
