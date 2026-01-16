@@ -4,11 +4,107 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Распознавание замен</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Вариант 1: локальная библиотека -->
-  <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-  <!-- Вариант 2: через CDN (удалите строку выше, если используете CDN) -->
-  <!-- <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script> -->
+  <style>
+    :root {
+      --bg: #0a1929;
+      --accent: #4CAF50;
+      --text: #e0f7fa;
+      --muted: #80cbc4;
+      --glass: rgba(255, 255, 255, 0.1);
+      --border: rgba(255, 255, 255, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg), #003366);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    main {
+      width: 90%;
+      max-width: 800px;
+      margin: 1rem auto;
+    }
+
+    .section {
+      margin: 1.5rem 0;
+      padding: 1.2rem;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.7rem 1.4rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #388e3c;
+    }
+
+    .file-info {
+      margin-top: 0.8rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 1rem;
+      color: var(--accent);
+    }
+
+    .recognized-text {
+      line-height: 1.6;
+      white-space: pre-line;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      min-height: 100px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: auto;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -17,33 +113,103 @@
   </header>
 
   <main>
-    <!-- Блок загрузки фото -->
-    <section class="upload-section">
-      <label for="fileInput" class="upload-btn">Выбрать фото</label>
+    <!-- Загрузка файла -->
+    <div class="section">
+      <label for="fileInput" class="btn">Выбрать фото</label>
       <input type="file" id="fileInput" accept="image/*" hidden>
       <p id="fileName" class="file-info">Файл не выбран</p>
-    </section>
+    </div>
 
-    <!-- Результат распознавания -->
-    <section class="result-section">
+    <!-- Предустановленное фото -->
+    <div class="section">
+      <button id="usePresetBtn" class="btn">
+        Использовать предустановленное фото (schedule.jpg)
+      </button>
+    </div>
+
+    <!-- Результат -->
+    <div class="section">
       <div id="loading" class="loading">Распознаём текст...</div>
       <div id="recognizedText" class="recognized-text">
-        Загрузите фото или дождитесь обработки предустановленного изображения.
+        Загрузите фото или дождитесь обработки.
       </div>
-    </section>
-
-    <!-- Предустановленное фото (из папки images/) -->
-    <section class="preset-section">
-      <button id="usePresetBtn" class="preset-btn">
-        Использовать предустановленное фото
-      </button>
-    </section>
+    </div>
   </main>
 
-  <footer>
-    <p>&copy; 2026 OCR-Сервис</p>
-  </footer>
+  <footer>&copy; 2026 OCR-Сервис</footer>
 
-  <script src="script.js"></script>
+  <!-- Tesseract через CDN (обязательно для GitHub Pages) -->
+  <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const fileInput = document.getElementById('fileInput');
+      const fileName = document.getElementById('fileName');
+      const recognizedText = document.getElementById('recognizedText');
+      const loading = document.getElementById('loading');
+      const usePresetBtn = document.getElementById('usePresetBtn');
+
+      // Путь к фото на GitHub Pages (относительный)
+      const presetImagePath = 'schedule.jpg';
+
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        fileName.textContent = `Загружено: ${file.name}`;
+        await recognizeTextFromFile(file);
+      });
+
+      usePresetBtn.addEventListener('click', async () => {
+        try {
+          const response = await fetch(presetImagePath);
+          if (!response.ok) {
+            throw new Error('Фото не найдено. Проверьте, лежит ли schedule.jpg в корне репозитория.');
+          }
+          const blob = await response.blob();
+          await recognizeTextFromBlob(blob);
+        } catch (err) {
+          recognizedText.textContent = `Ошибка: ${err.message}`;
+          console.error(err);
+        }
+      });
+
+      async function recognizeTextFromFile(file) {
+        loading.style.display = 'block';
+        recognizedText.style.display = 'none';
+
+        try {
+          const result = await Tesseract.recognize(file, 'rus+eng', {
+            logger: m => console.log(m)
+          });
+          recognizedText.textContent = result.data.text;
+        } catch (err) {
+          recognizedText.textContent = `Ошибка распознавания: ${err.message}`;
+          console.error(err);
+        }
+
+        loading.style.display = 'none';
+        recognizedText.style.display = 'block';
+      }
+
+      async function recognizeTextFromBlob(blob) {
+        loading.style.display = 'block';
+        recognizedText.style.display = 'none';
+
+        try {
+          const result = await Tesseract.recognize(blob, 'rus+eng', {
+            logger: m => console.log(m)
+          });
+          recognizedText.textContent = result.data.text;
+        } catch (err) {
+          recognizedText.textContent = `Ошибка распознавания: ${err.message}`;
+          console.error(err);
+        }
+
+        loading.style.display = 'none';
+        recognizedText.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 </html>
