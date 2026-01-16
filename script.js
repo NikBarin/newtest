@@ -62,4 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       recognizedText.textContent = result.data.text;
     } catch (err) {
-      recognizedText.textContent = `Ошибка распознавания: ${
+      recognizedText.textContent = `Ошибка распознавания: ${err.message}`;
+      console.error(err);
+    }
+
+    loading.style.display = 'none';
+    recognizedText.style.display = 'block';
+  }
+});
+
