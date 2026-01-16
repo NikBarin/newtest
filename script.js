@@ -70,4 +70,3 @@ document.addEventListener('DOMContentLoaded', () => {
     recognizedText.style.display = 'block';
   }
 });
-
