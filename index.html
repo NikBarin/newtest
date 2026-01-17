@@ -100,54 +100,11 @@
   <div class="result-area">
     <div id="loading" class="loading">Распознаём текст из фото...</div>
     <div id="recognizedText" class="recognized-text">
-      <!-- Здесь появится текст после распознавания -->
+      текпт
     </div>
   </div>
 
   <footer>Сделано с помощью Tesseract.js</footer>
 
-
-  <!-- Подключаем Tesseract через jsDelivr (надёжнее, чем unpkg) -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-
-  <script>
-    // Явно задаём путь к worker (критично для GitHub Pages)
-    Tesseract.workerPath = 'https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/worker.min.js';
-
-    // Путь к фото (укажите корректный путь к вашему файлу)
-    const imagePath = 'schedule.jpg'; // ← измените на реальный путь, если нужно
-
-
-    async function initOCR() {
-      try {
-        // Загружаем изображение
-        const response = await fetch(imagePath);
-        if (!response.ok) {
-          throw new Error('Фото не найдено. Проверьте путь к файлу.');
-        }
-        
-        const blob = await response.blob();
-
-        // Распознаём текст (русский + английский)
-        const result = await Tesseract.recognize(blob, 'rus+eng', {
-          logger: m => console.log(m) // Логирование процесса (можно убрать)
-        });
-
-        // Выводим результат
-        document.getElementById('recognizedText').textContent = result.data.text;
-
-      } catch (err) {
-        document.getElementById('recognizedText').textContent = 
-          'Ошибка: ' + err.message + '. Проверьте путь к фото или его формат.';
-        console.error(err);
-      }
-
-      // Скрываем индикатор загрузки
-      document.getElementById('loading').style.display = 'none';
-    }
-
-    // Запускаем при загрузке страницы
-    window.addEventListener('load', initOCR);
-  </script>
 </body>
 </html>
