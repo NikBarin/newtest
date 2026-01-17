@@ -1,215 +1,153 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Распознавание замен</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Распознанные замены</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a1929;
-      --accent: #4CAF50;
-      --text: #e0f7fa;
-      --muted: #80cbc4;
-      --glass: rgba(255, 255, 255, 0.1);
-      --border: rgba(255, 255, 255, 0.2);
+      --bg1: #050b18;
+      --bg2: #0b1426;
+      --glass: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #67c8ff;
+      --text: #eef5ff;
+      --muted: #9fb3d1;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
 
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--bg), #003366);
+      background: radial-gradient(600px 400px at 10% 15%, rgba(103, 200, 255, 0.1), transparent),
+                radial-gradient(600px 400px at 90% 85%, rgba(214, 133, 255, 0.07), transparent),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
       color: var(--text);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      min-height: 100vh;
+      padding: 12px;
     }
 
     header {
       text-align: center;
-      padding: 2rem 1rem;
+      padding: 16px 0;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
+    .title {
+      font-size: 24px;
+      font-weight: 700;
     }
 
-    p {
+    .subtitle {
       color: var(--muted);
-      font-size: 1rem;
+      font-size: 14px;
+      margin-top: 4px;
     }
 
-    main {
+    .result-area {
       width: 90%;
-      max-width: 800px;
-      margin: 1rem auto;
-    }
-
-    .section {
-      margin: 1.5rem 0;
-      padding: 1.2rem;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
       background: var(--glass);
       border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .btn {
-      display: inline-block;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 0.7rem 1.4rem;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-
-    .btn:hover {
-      background: #388e3c;
-    }
-
-    .file-info {
-      margin-top: 0.8rem;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 1rem;
-      color: var(--accent);
+      border-radius: 14px;
+      min-height: 200px;
+      position: relative;
     }
 
     .recognized-text {
+      font-size: 16px;
       line-height: 1.6;
+      color: var(--text);
       white-space: pre-line;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg1);
+      color: var(--text);
+      padding: 12px 24px;
       border-radius: 8px;
-      min-height: 100px;
+      font-size: 14px;
     }
 
     footer {
       text-align: center;
-      padding: 1.5rem;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 12px;
       margin-top: auto;
-      width: 100%;
+      padding: 16px 0;
+      opacity: 0.7;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Распознавание расписания замен</h1>
-    <p>Загрузите фото или используйте предустановленное изображение</p>
+    <div class="title">РАСПОЗНАННЫЕ ЗАМЕНЫ</div>
+    <div class="subtitle">Текст извлечён из фото расписания</div>
   </header>
 
-  <main>
-    <!-- Загрузка файла -->
-    <div class="section">
-      <label for="fileInput" class="btn">Выбрать фото</label>
-      <input type="file" id="fileInput" accept="image/*" hidden>
-      <p id="fileName" class="file-info">Файл не выбран</p>
+  <div class="result-area">
+    <div id="loading" class="loading">Распознаём текст из фото...</div>
+    <div id="recognizedText" class="recognized-text">
+      <!-- Здесь появится текст после распознавания -->
     </div>
+  </div>
 
-    <!-- Предустановленное фото -->
-    <div class="section">
-      <button id="usePresetBtn" class="btn">
-        Использовать предустановленное фото (schedule.jpg)
-      </button>
-    </div>
+  <footer>Сделано с помощью Tesseract.js</footer>
 
-    <!-- Результат -->
-    <div class="section">
-      <div id="loading" class="loading">Распознаём текст...</div>
-      <div id="recognizedText" class="recognized-text">
-        Загрузите фото или дождитесь обработки.
-      </div>
-    </div>
-  </main>
 
-  <footer>&copy; 2026 OCR-Сервис</footer>
-
-  <!-- Tesseract через CDN (обязательно для GitHub Pages) -->
-  <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+  <!-- Подключаем Tesseract через jsDelivr (надёжнее, чем unpkg) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const fileInput = document.getElementById('fileInput');
-      const fileName = document.getElementById('fileName');
-      const recognizedText = document.getElementById('recognizedText');
-      const loading = document.getElementById('loading');
-      const usePresetBtn = document.getElementById('usePresetBtn');
+    // Явно задаём путь к worker (критично для GitHub Pages)
+    Tesseract.workerPath = 'https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/worker.min.js';
 
-      // Путь к фото на GitHub Pages (относительный)
-      const presetImagePath = 'schedule.jpg';
+    // Путь к фото (укажите корректный путь к вашему файлу)
+    const imagePath = 'images/schedule.jpg'; // ← измените на реальный путь, если нужно
 
-      fileInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
 
-        fileName.textContent = `Загружено: ${file.name}`;
-        await recognizeTextFromFile(file);
-      });
-
-      usePresetBtn.addEventListener('click', async () => {
-        try {
-          const response = await fetch(presetImagePath);
-          if (!response.ok) {
-            throw new Error('Фото не найдено. Проверьте, лежит ли schedule.jpg в корне репозитория.');
-          }
-          const blob = await response.blob();
-          await recognizeTextFromBlob(blob);
-        } catch (err) {
-          recognizedText.textContent = `Ошибка: ${err.message}`;
-          console.error(err);
+    async function initOCR() {
+      try {
+        // Загружаем изображение
+        const response = await fetch(imagePath);
+        if (!response.ok) {
+          throw new Error('Фото не найдено. Проверьте путь к файлу.');
         }
-      });
+        
+        const blob = await response.blob();
 
-      async function recognizeTextFromFile(file) {
-        loading.style.display = 'block';
-        recognizedText.style.display = 'none';
+        // Распознаём текст (русский + английский)
+        const result = await Tesseract.recognize(blob, 'rus+eng', {
+          logger: m => console.log(m) // Логирование процесса (можно убрать)
+        });
 
-        try {
-          const result = await Tesseract.recognize(file, 'rus+eng', {
-            logger: m => console.log(m)
-          });
-          recognizedText.textContent = result.data.text;
-        } catch (err) {
-          recognizedText.textContent = `Ошибка распознавания: ${err.message}`;
-          console.error(err);
-        }
+        // Выводим результат
+        document.getElementById('recognizedText').textContent = result.data.text;
 
-        loading.style.display = 'none';
-        recognizedText.style.display = 'block';
+      } catch (err) {
+        document.getElementById('recognizedText').textContent = 
+          'Ошибка: ' + err.message + '. Проверьте путь к фото или его формат.';
+        console.error(err);
       }
 
-      async function recognizeTextFromBlob(blob) {
-        loading.style.display = 'block';
-        recognizedText.style.display = 'none';
+      // Скрываем индикатор загрузки
+      document.getElementById('loading').style.display = 'none';
+    }
 
-        try {
-          const result = await Tesseract.recognize(blob, 'rus+eng', {
-            logger: m => console.log(m)
-          });
-          recognizedText.textContent = result.data.text;
-        } catch (err) {
-          recognizedText.textContent = `Ошибка распознавания: ${err.message}`;
-          console.error(err);
-        }
-
-        loading.style.display = 'none';
-        recognizedText.style.display = 'block';
-      }
-    });
+    // Запускаем при загрузке страницы
+    window.addEventListener('load', initOCR);
   </script>
 </body>
 </html>
