@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Распознанные замены</title>
+  <title>Замены</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -32,11 +32,32 @@
       flex-direction: column;
       min-height: 100vh;
       padding: 12px;
+      position: relative;
+    }
+
+    /* Фоновый текст */
+    .background-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+      color: rgba(255, 255, 255, 0.15);
+      font-size: 2rem;
+      font-weight: 600;
+      white-space: pre;
+      text-align: center;
+      line-height: 2;
+      user-select: none;
+      opacity: 0.6;
     }
 
     header {
       text-align: center;
       padding: 16px 0;
+      position: relative;
+      z-index: 1;
     }
 
     .title {
@@ -50,35 +71,26 @@
       margin-top: 4px;
     }
 
-    .result-area {
+    .content-area {
+      flex: 1;
       width: 90%;
       max-width: 1200px;
-      margin: 20px auto;
-      padding: 20px;
+      margin: 0 auto;
+      padding: 30px;
       background: var(--glass);
       border: 1px solid var(--border);
       border-radius: 14px;
-      min-height: 200px;
+      overflow-y: auto;
+      min-height: 300px;
       position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
     }
 
-    .recognized-text {
+    .main-content {
       font-size: 16px;
       line-height: 1.6;
       color: var(--text);
-      white-space: pre-line;
-    }
-
-    .loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--bg1);
-      color: var(--text);
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
     }
 
     footer {
@@ -88,21 +100,47 @@
       margin-top: auto;
       padding: 16px 0;
       opacity: 0.7;
+      position: relative;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
+  <!-- Фоновый текст (из документа) -->
+  <div class="background-text">
+    ЗАМЕНЫ НА 15 ЯНВАРЯ 2025 ГОДА
+    1. Алгебра (47) → Отмена (Екатерина Сергеевна)
+    2. Труд (8/9) → Информатика (39) (Иван Анатольевич)
+    3. Англ/Инф (49a/39) → Русский (33) (Алёна Сергеевна)
+    4. Физика (46) → География (49) (Виктория Владимировна)
+    5. История (47) → Классный час (29) (Виктор Викторович)
+
+    ЗАМЕНЫ НА 16 ЯНВАРЯ 2025 ГОДА
+    1. Физра (Большой зал) → Теория (23) (Сергей Александрович)
+    2. Геометрия (47) → Алгебра (47) (Екатерина Сергеевна)
+    3. Английский (30/49а) → Немецкий (31) (Анна Ивановна)
+    4. География (49) → Биология (14) (Елена Анатольевна)
+    5. История (47) → Обществознание (42) (Павел Сергеевич)
+  </div>
+
   <header>
-    <div class="title">РАСПОЗНАННЫЕ ЗАМЕНЫ</div>
+    <div class="title">ЗАМЕНЫ</div>
+    <div class="subtitle">Актуальная информация о заменах уроков</div>
   </header>
 
-  <div>
-    <div id="recognizedText" class="recognized-text">
-      текпт
+  <div class="content-area">
+    <div class="main-content">
+      <p>Здесь отображается структурированная информация о заменах. Текущие замены выделены ниже:</p>
+
+      <ul>
+        <li><strong>15.01.2025:</strong> Алгебра отменена; Труд → Информатика; Англ/Инф → Русский; Физика → География; История → Классный час</li>
+        <li><strong>16.01.2025:</strong> Физра → Теория; Геометрия → Алгебра; Английский → Немецкий; География → Биология; История → Обществознание</li>
+      </ul>
+
+      <p>Для получения полного списка замен просмотрите фоновый текст или обратитесь к координатору.</p>
     </div>
   </div>
 
-  <footer>Сделано с помощью Tesseract.js</footer>
-
+  <footer>Сделано с помощью ChatGPT</footer>
 </body>
 </html>
