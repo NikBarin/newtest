@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Расписание на дату</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg1: #050b18;
+      --bg2: #0b1426;
+      --glass: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #67c8ff;
+      --text: #eef5ff;
+      --muted: #9fb3d1;
+      --card-hover: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      padding: 16px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .date-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .back-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+    }
+
+    .schedule-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .lesson-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 20px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .lesson-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      background: var(--card-hover);
+    }
+
+    .lesson-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lesson-subject {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .lesson-detail {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .lesson-hw {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .lesson-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      .lesson-card {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="date-title" id="dateTitle">Расписание</h1>
+      <a href="index.html" class="back-link">
+        ← Вернуться к календарю
+      </a>
+    </header>
+
+    <div class="schedule-list" id="scheduleList">
+      <!-- Здесь будут подгружаться уроки -->
+    </div>
+  </div>
+
+  <script>
+    // Получаем дату из параметра URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedDate = urlParams.get('date');
+
+    // Устанавливаем заголовок
+    document.getElementById('dateTitle').textContent = 
+      `Расписание на ${selectedDate || 'неизвестную дату'}`;
+
+    // Ссылка на CSV из Google Таблиц (замените на свою!)
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1B06SKEqasGty7SNQZqVy1NE5x6vFLq75ThgbTblzgmQ/edit?usp=sharing';
+
+    async function loadSchedule() {
+      try {
+        const response = await fetch(csvUrl);
+        const csvText = await response.text();
+        const rows = csvText.split('\n').map(row => row.split(','));
+
+        const scheduleList = document.getElementById('scheduleList');
+        let hasData = false;
+
+        // Проходим по всем строкам CSV
+        rows.forEach(row => {
+          // Проверяем совпадение даты (первый столбец)
+          if (row[0] === selectedDate) {
+            hasData = true;
+
+            // Создаем карточку урока
+            const card = document.createElement('div');
+            card.className = 'lesson-card';
+
+            card.innerHTML = `
+              <div class="lesson-info">
+                <div class="lesson-subject">${row[1] || 'Без названия'}</div>
+                <div class="lesson-detail">
+                  <span>Учитель: ${row[2] || 'Не указан'}</span>
+                  <span>Кабинет: ${row[3] || '—'}</span>
+                </div>
+                <div class="lesson-hw">
+                  <strong>ДЗ:</strong> ${row[4] || 'Нет задания'}
+                </div>
+              </div>
+              <img
+                src="${row[5] || 'https://via.placeholder.com/180x160/050b18/FFFFFF?text=Нет+изображения'}"
+                alt="Иллюстрация к уроку"
+                class="lesson-img"
+                onerror="this.src='https://via.placeholder.com/180x160/050b18/FFFFFF?text=Ошибка+загрузки'"
+              >
+            `;
+
+            scheduleList.appendChild(card);
+          }
+        });
+
+        // Если данных нет
+        if (!hasData) {
+          scheduleList.innerHTML = `
+            <div class="no-data">
+              На эту дату нет запланированных уроков<br>
+              или данные не загружены
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки расписания:', error);
+        document.getElementById('scheduleList').innerHTML = `
+          <div class="no-data">
+            Не удалось загрузить расписание.<br>
+            Проверьте подключение к интернету или ссылку на данные.
+          </div>
+        `;
+      }
+    }
+
+    // Загружаем расписание при открытии страницы
+    loadSchedule();
+  </script>
+</body>
+</html>
